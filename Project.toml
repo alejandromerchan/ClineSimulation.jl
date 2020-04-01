@@ -3,6 +3,9 @@ uuid = "e53ced18-3694-4df2-9aab-6859bb24606b"
 authors = ["H. Alejandro Merchan", "California Department of Pesticide Regulation"]
 version = "0.1.0"
 
+[deps]
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+
 [compat]
 julia = "1"
 

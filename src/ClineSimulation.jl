@@ -1,5 +1,11 @@
 module ClineSimulation
 
-greet() = print("Hello World!")
+export binomial_migration,
+       migration,
+       correction
+
+using Distributions: Binomial,  pdf
+
+include("migration.jl")
 
 end # module
