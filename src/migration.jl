@@ -1,4 +1,4 @@
-#= 
+#=
 Binomial migration model from Mallet & Barton 1989
 max_migration: the maximum number of demes that get migration from the source (n in Mallet & Barton 1989)
 migration_distance: distance (in demes) between the source and the receiving deme (i in MAllet & BArton 1989)
@@ -18,7 +18,7 @@ function binomial_migration(max_migration, migration_distance, α = 0.5)
     return(pdf(prob, dist))
 end
 
-function migration(migration_distance, cline)
+function migration(migration_distance, cline, alpha = 0.5)
     # Object to catch results
     migration_matrix = zeros(length(cline), length(cline))
 
@@ -26,41 +26,41 @@ function migration(migration_distance, cline)
     for i in 1:length(cline)               # row
         for j in 1:length(cline)           # column
             if -migration_distance <= (i - j) <= migration_distance
-                migration_matrix[i, j] = binomial_migration(migration_distance, i-j)
+                migration_matrix[i, j] = binomial_migration(migration_distance, i-j, alpha)
             end
         end
     end
 
-    next_generation = (cline * migration_matrix) + correction(migration_distance, cline)
+    next_generation = (cline * migration_matrix) + correction(migration_distance, cline, alpha)
 
     return(next_generation)
 end
 
-function correction(migration_distance, cline)
-    #= 
+function correction(migration_distance, cline, alpha = 0.5)
+    #=
     Correct for borders (imaginary demes beyond the studied ones that contribute to
     migration)
     =#
     correction = zeros(1, length(cline))
-    correction_right = map(sum, correction_vector(migration_distance, cline) * last(cline))
+    correction_right = map(sum, correction_vector(migration_distance, cline, alpha) * last(cline))
     for i = 1:migration_distance
         correction[i] = correction_right[i]
     end
     correction = reverse(correction; dims = 2)
-    correction_left = map(sum, correction_vector(migration_distance, cline) * first(cline))
+    correction_left = map(sum, correction_vector(migration_distance, cline, alpha) * first(cline))
     for i = 1:migration_distance
         correction[i] = correction_left[i]
     end
     return(correction)
 end
 
-function correction_vector(migration_distance, cline)
+function correction_vector(migration_distance, cline, alpha = 0.5)
     correction_vec = fill(Float64[], 1, migration_distance)
     n = length(cline)
     deme_vec = []
 
     for i in reverse(1:migration_distance)
-        deme_vec = push!(deme_vec, binomial_migration(migration_distance, i))    
+        deme_vec = push!(deme_vec, binomial_migration(migration_distance, i, alpha))
         correction_vec[i] = deme_vec
     end
     return(correction_vec)
